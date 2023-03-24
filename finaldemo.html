@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+        <form id="myform">
+            <label for="inputid1">Seller Price</label>
+            <input type="text" id="inputid1" />
+            <label for="inputid2">Product Name</label>
+            <input type="text" id="inputid2"/>
+            <label for="inputid3">Choose Category</label>
+            <select id="inputid3">
+                <option value="Electronics">Electronics</option>
+                <option value="Food Items">Food Items</option>
+                <option value="Skin Care">Skin Care</option>
+            </select>                                                                                                                                                                                                                                                                                               
+            <button type="submit">Add Product</button>
+
+        </form>
+        <ul id="list of item"></ul>
+</body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+        <script>
+            let form=document.getElementById("myform")
+            let itemslist=document.getElementById("list of item")
+
+            window.addEventListener("DOMContentLoaded",refresh)
+            async function refresh(){
+                try{
+                const Promise1=await axios.get("https://crudcrud.com/api/649c39bbb69242f2a2b610f5938f243e/hotel")
+                    console.log(response)
+                    for(var i=0;i<promise1.data.length;i++){
+                        showOnScreen(promise1.data[i])
+                    }
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }
+
+            form.addEventListener("submit",saveToLocalStorage)
+            async function saveToLocalStorage(event){
+                event.preventDefault();
+                try{    
+                const sellerPrice=event.target.inputid1.value;
+                const productName=event.target.inputid2.value;
+                const category=event.target.inputid3.value;
+                  
+                const total_items={
+                    sellerPrice,
+                    productName,
+                    category
+                }
+                const promise1=await axios.post("https://crudcrud.com/api/649c39bbb69242f2a2b610f5938f243e/hotel",total_items)
+                //.then(()=>{
+                    showOnScreen(promise1.data)
+                    console.log(promise1)
+                //})
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }
+
+            function showOnScreen(user){
+                form.reset()
+                const childHtml= `<li id=${user._id}> ${user.sellerPrice}-${user.productName}-${user.category}
+                    <button onclick=deleteUser('${user._id}')>Delete User</button>
+                    <button onclick=editUser('${user._id}','${user.sellerPrice}','${user.productName}','${user.category}')>Edit user</button>
+                        </li>`
+                itemslist.innerHTML=itemslist.innerHTML+childHtml
+
+            }
+
+            async function deleteUser(userid){
+                try{
+                const promise1=await axios.delete(`https://crudcrud.com/api/649c39bbb69242f2a2b610f5938f243e/hotel/${userid}`)
+                //.then(()=>{
+                    removefromScreen(userid)
+                    console.log(promise1)
+                //})
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }
+
+            async function editUser(userid,sellerPrice,productName,category){
+                document.getElementById("inputid1").value=sellerPrice
+                document.getElementById("inputid2").value=productName
+                document.getElementById("inputid3").value=category
+                deleteUser(userid)
+                try{
+                const total_items={
+                    sellerPrice,
+                    productName,
+                    category
+                }
+                const promise1=await axios.put("https://crudcrud.com/api/649c39bbb69242f2a2b610f5938f243e/hotel",total_items)
+                //.then(()=>{
+                    showOnScreen(promise1.data)
+                //})
+                }
+                catch(err){
+                    console.log(err)
+                }
+            }
+
+            function removefromScreen(userid){
+                const eleRemove=document.getElementById(`${userid}`)
+                if(eleRemove!=null){
+                    itemslist.removeChild(eleRemove)
+                }
+            }
+
+                
+            
+
+        </script>
+</html>
